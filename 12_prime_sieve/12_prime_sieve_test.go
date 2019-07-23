@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-func TestConcurrency(t *testing.T) {
-	Concurrency()
-}
+// func TestConcurrency(t *testing.T) {
+// 	Concurrency()
+// }
 
 func TestSequential(t *testing.T) {
 	Sequential()

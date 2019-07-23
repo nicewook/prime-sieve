@@ -5,7 +5,11 @@ import (
 	"time"
 )
 
-const maxPrimeNum = 104729 // the 10,000th prime number is 104729
+// const maxPrimeNum = 104729  // the 10,000th prime number is 104729
+// const primeCount = 10000
+
+const maxPrimeNum = 1299827 // the 100,008th prime number is 1299827
+const primeCount = 100008
 
 func generate(ch chan<- int) {
 	for i := 2; i < maxPrimeNum+1; i++ {
@@ -29,10 +33,10 @@ func Concurrency() {
 	ch := make(chan int)
 	go generate(ch)
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < primeCount; i++ {
 		prime := <-ch
 		if i < 10 {
-			fmt.Print(prime, " ")
+			// fmt.Print(prime, " ")
 		}
 		ch1 := make(chan int)
 		go filter(ch, ch1, prime)
@@ -61,7 +65,7 @@ func Sequential() {
 	for i := 2; i < maxPrimeNum+1; i++ {
 		if num[i] == false && cnt < 10 {
 			cnt++
-			fmt.Print(i, " ")
+			// fmt.Print(i, " ")
 		}
 	}
 	fmt.Println()
