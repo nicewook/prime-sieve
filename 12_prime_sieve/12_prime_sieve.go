@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// const maxPrimeNum = 104729  // the 10,000th prime number is 104729
+// const maxPrimeNum = 104729 // the 10,000th prime number is 104729
 // const primeCount = 10000
 
 const maxPrimeNum = 1299827 // the 100,008th prime number is 1299827
@@ -15,11 +15,51 @@ func generate(ch chan<- int) {
 	for i := 2; i < maxPrimeNum+1; i++ {
 		ch <- i
 	}
+	close(ch)
 }
 
 func filter(in <-chan int, out chan<- int, prime int) {
 	for {
-		i := <-in
+		i, ok := <-in
+		if !ok {
+			break
+		}
+		if i%prime != 0 {
+			out <- i
+			// fmt.Printf("%d ", i)
+		}
+	}
+	// fmt.Println()
+}
+
+func filter2(in <-chan int, out chan<- int, prime int) {
+	nextPrimeSquare := 0
+
+	// search next prime
+	for {
+		i, ok := <-in
+		if !ok {
+			close(out)
+			return
+		}
+		if i%prime != 0 {
+			nextPrimeSquare = i * i
+			out <- i
+			break
+		}
+	}
+
+	// sieve
+	for {
+		i, ok := <-in
+		if !ok {
+			close(out)
+			return
+		}
+
+		if i < nextPrimeSquare {
+			continue
+		}
 		if i%prime != 0 {
 			out <- i
 		}
@@ -40,6 +80,23 @@ func Concurrency() {
 		}
 		ch1 := make(chan int)
 		go filter(ch, ch1, prime)
+		ch = ch1
+	}
+	fmt.Println()
+	fmt.Println(time.Now().UnixNano()-nanos, " ns")
+}
+
+// Concurrency2 uses golang concurrency
+func Concurrency2() {
+	nanos := time.Now().UnixNano()
+
+	ch := make(chan int)
+	go generate(ch)
+
+	for i := 0; i < primeCount; i++ {
+		prime := <-ch
+		ch1 := make(chan int)
+		go filter2(ch, ch1, prime)
 		ch = ch1
 	}
 	fmt.Println()
